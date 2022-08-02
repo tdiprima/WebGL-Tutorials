@@ -1,18 +1,21 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<title>WebGL</title>
-		<link rel="stylesheet" href="index.css" type="text/css" />
-	</head>
+<head>
+  <meta charset="utf-8">
+  <title>Video As A Texture</title>
+  <link rel="stylesheet" href="/css/index.css" type="text/css">
+</head>
+<body onload="main();">
 
-	<body onload="main();">
-		<canvas id="glcanvas" width="640" height="480"></canvas>
-		<img id="CrateImage" src="crate_0.png" width="0" height="0"></img>
-		<video id="i2" width="512" height="512" src="shark_3d_360.mp4" controls>
-</video>
-	</body>
+<canvas id="glcanvas" width="640" height="480"></canvas>
 
-	<script src="gl-matrix.js"></script>
-	<script src="index.js"></script>
+<img id="CrateImage" src="crate_0.png" width="0" height="0">
+
+<video id="i2" width="512" height="512" src="shark_3d_360.mp4" controls=""></video>
+
+<script src="gl-matrix.js"></script>
+
+<script src="index.js"></script>
+
+</body>
 </html>
