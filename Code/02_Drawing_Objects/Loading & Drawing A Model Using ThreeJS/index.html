@@ -21,20 +21,20 @@
   import { MTLLoader } from "./jsm/loaders/MTLLoader.js";
   import { OBJLoader } from "./jsm/loaders/OBJLoader.js";
 
-  var scene = new THREE.Scene();
-  var camera = new THREE.PerspectiveCamera(75, 640.0 / 480.0, 0.1, 1000);
+  let scene = new THREE.Scene();
+  let camera = new THREE.PerspectiveCamera(75, 640.0 / 480.0, 0.1, 1000);
 
-  var renderer = new THREE.WebGLRenderer();
+  let renderer = new THREE.WebGLRenderer();
   renderer.setSize(640.0, 480.0);
   document.body.appendChild(renderer.domElement);
 
   camera.position.z = 5;
 
-  var object,
+  let object,
     texture,
     objectLoaded = false;
 
-  var animate = function() {
+  let animate = function() {
     requestAnimationFrame(animate);
 
     if (objectLoaded) {
@@ -51,10 +51,10 @@
   function onError() {
   }
 
-  var manager = new THREE.LoadingManager();
+  let manager = new THREE.LoadingManager();
   manager.addHandler(/\.dds$/i, new DDSLoader());
 
-  var light = new THREE.HemisphereLight(0xffffff, 0x000000);
+  let light = new THREE.HemisphereLight(0xffffff, 0x000000);
   light.position.set(0, 50, 0);
   scene.add(light);
 
@@ -84,5 +84,6 @@
   renderer.render(scene, camera);
   animate();
 </script>
+
 </body>
 </html>
