@@ -1,23 +1,5 @@
 main( );
 
-function NormalisedToDevice( coord, axisSize )
-{
-	var halfAxisSize = axisSize / 2;
-
-	var deviceCoord = ( coord + 1 ) * halfAxisSize;
-
-	return deviceCoord;
-}
-
-function DeviceToNormalised( coord, axisSize )
-{
-	var halfAxisSize = axisSize / 2;
-
-	var normalisedCoord = ( coord / halfAxisSize ) - 1;
-
-	return normalisedCoord;
-}
-
 function main( )
 {
 	const canvas = document.querySelector( "#glcanvas" );
