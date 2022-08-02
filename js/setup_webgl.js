@@ -15,9 +15,14 @@ function DeviceToNormalised(coord, axisSize) {
 }
 
 function main() {
-  if (!document.querySelector("#glcanvas").getContext("webgl")) {
-    alert("Unable to setup WebGL. Your browser or computer may not support it.");
-    return;
+  try {
+    let gl = document.querySelector("#glcanvas").getContext("webgl");
+    if (!gl) {
+      alert("Unable to setup WebGL. Your browser or computer may not support it.");
+      return;
+    }
+  } catch (e) {
+    console.error(e.message);
   }
 }
 
