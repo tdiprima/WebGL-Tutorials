@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Setup ThreeJS</title>
+  <link rel="stylesheet" href="/css/index.css" type="text/css">
+</head>
+<body>
+<!--<canvas id="glcanvas" width="640" height="480"></canvas>-->
+<script src="https://threejs.org/build/three.js"></script>
+<script>
+  let scene = new THREE.Scene();
+  let camera = new THREE.PerspectiveCamera(75, 640.0 / 480.0, 0.1, 1000);
+
+  let renderer = new THREE.WebGLRenderer();
+  renderer.setSize(640.0, 480.0);
+  document.body.appendChild(renderer.domElement);
+
+  let geometry = new THREE.BoxGeometry(1, 1, 1);
+  let material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+  let cube = new THREE.Mesh(geometry, material);
+  scene.add(cube);
+
+  camera.position.z = 5;
+
+  const animate = function () {
+    requestAnimationFrame(animate);
+
+    cube.rotation.x += 0.01;
+    cube.rotation.y += 0.01;
+
+    renderer.render(scene, camera);
+  };
+
+  animate();
+</script>
+</body>
+</html>
