@@ -4,38 +4,17 @@
   <meta charset="utf-8">
   <title>Normalised Coordinates vs Device Coordinates</title>
   <link rel="stylesheet" href="/css/index.css">
+  <script src="/js/setup_webgl.js"></script>
 </head>
 <body>
 
 <canvas id="glcanvas" width="640" height="480"></canvas>
 
 <script>
-  function NormalisedToDevice(coord, axisSize) {
-    let halfAxisSize = axisSize / 2;
-
-    let deviceCoord = (coord + 1) * halfAxisSize;
-
-    return deviceCoord;
-  }
-
-  function DeviceToNormalised(coord, axisSize) {
-    let halfAxisSize = axisSize / 2;
-
-    let normalisedCoord = coord / halfAxisSize - 1;
-
-    return normalisedCoord;
-  }
-
   function main() {
     let canvas = document.querySelector('#glcanvas');
 
     let gl = canvas.getContext('webgl');
-
-    if (!gl) {
-      alert('Unable to setup WebGL. Your browser or computer may not support it.');
-
-      return;
-    }
 
     let vertices = [
       DeviceToNormalised( 0, canvas.width ), DeviceToNormalised( 240, canvas.height ), 0.0,
