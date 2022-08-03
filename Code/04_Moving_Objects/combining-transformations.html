@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Combining Transformations</title>
-<link rel="stylesheet" href="/css/index.css">
+  <meta charset="utf-8">
+  <title>Combining Transformations</title>
+  <link rel="stylesheet" href="/css/index.css">
 </head>
 <body>
 
@@ -15,17 +15,17 @@
 
 <script>
   function main() {
-    let canvas = document.querySelector('#glcanvas');
+    let canvas = document.querySelector("#glcanvas");
 
-    let gl = canvas.getContext('webgl');
+    let gl = canvas.getContext("webgl");
 
     if (!gl) {
-      alert('Unable to setup WebGL. Your browser or computer may not support it.');
+      alert("Unable to setup WebGL. Your browser or computer may not support it.");
 
       return;
     }
 
-    var vertices = [
+    let vertices = [
       // X, Y, Z         U, V
       // Top
       -1.0, 1.0, -1.0,   0, 0,
@@ -61,10 +61,10 @@
       -1.0, -1.0, -1.0,   1, 1,
       -1.0, -1.0, 1.0,    1, 0,
       1.0, -1.0, 1.0,     0, 0,
-      1.0, -1.0, -1.0,    0, 1,
+      1.0, -1.0, -1.0,    0, 1
     ];
 
-    var indices = [
+    let indices = [
       // Top
       0, 1, 2,
       0, 2, 3,
@@ -214,7 +214,7 @@
     // Translating z
     view_matrix[14] -= 6;
 
-    /*= =================== Rotation ==================== */
+    /*==================== Rotation ====================*/
 
     function rotateX(m, angle) {
       let c = Math.cos(angle);
