@@ -5,7 +5,6 @@
   <title>Drawing A Triangle With Lines Using gl.TRIANGLES,
     gl.TRIANGLE_STRIP & gl.TRIANGLE_FAN</title>
   <link rel="stylesheet" href="/css/index.css">
-  <script src="/js/setup_webgl.js"></script>
 </head>
 <body>
 
@@ -14,8 +13,12 @@
 <script>
   function main() {
     let canvas = document.querySelector('#glcanvas');
-
     let gl = canvas.getContext('webgl');
+    if (!gl)
+    {
+      alert( "Unable to setup WebGL. Your browser or computer may not support it." );
+      return;
+    }
 
     let vertices = [
       -0.5, -0.2, 0.0,
