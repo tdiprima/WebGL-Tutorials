@@ -262,7 +262,7 @@
     }
 
     let previous_time = 0;
-    var animate = function(time) {
+    const animate = function(time) {
       let dt = time - previous_time;
       rotateZ(mov_matrix, dt * 0.00); //time
       rotateY(mov_matrix, dt * 0.000);
@@ -284,6 +284,7 @@
       gl.bindTexture(gl.TEXTURE_2D, boxTexture);
       gl.activeTexture(gl.TEXTURE0);
 
+      // scaling
       let sX = 1.0,
         sY = 1.5,
         sZ = 1.0;
