@@ -1,3 +1,5 @@
+// Import declarations may only appear at top level of a module.
+// This is a module! Do: <script type="module"...>
 import { DDSLoader } from "./jsm/loaders/DDSLoader.js";
 import { MTLLoader } from "./jsm/loaders/MTLLoader.js";
 import { OBJLoader } from "./jsm/loaders/OBJLoader.js";
