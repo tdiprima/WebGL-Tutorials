@@ -12,75 +12,61 @@
 
 <script src="/js/gl-matrix.js"></script>
 <script>
-  main( );
+  main();
 
-  function main( )
-  {
-    const canvas = document.querySelector( "#glcanvas" );
+  function main() {
+    let canvas = document.querySelector("#glcanvas");
 
-    const gl = canvas.getContext( "webgl" );
+    let gl = canvas.getContext("webgl");
 
-    if ( !gl )
-    {
-      alert( "Unable to setup WebGL. Your browser or computer may not support it." );
+    if (!gl) {
+      alert("Unable to setup WebGL. Your browser or computer may not support it.");
 
       return;
     }
 
     /*
-    ********************************************
-    **********KEYBOARD DETECTION START**********
-    ********************************************
-    */
-    var translationX = 0.0;
-    var translationY = 0.0;
-    var translationZ = 0.0;
+     ********************************************
+     **********KEYBOARD DETECTION START**********
+     ********************************************
+     */
+    let translationX = 0.0;
+    let translationY = 0.0;
+    let translationZ = 0.0;
 
-    const bodyElement = document.querySelector( "body" );
+    let bodyElement = document.querySelector("body");
 
-    bodyElement.addEventListener( "keydown", KeyDown, false );
-    bodyElement.addEventListener( "keyup", keyUp, false );
+    bodyElement.addEventListener("keydown", KeyDown, false);
+    bodyElement.addEventListener("keyup", keyUp, false);
 
-    function KeyDown( event )
-    {
-      if ( "ArrowUp" === event.key )
-      {
+    function KeyDown(event) {
+      if (event.key === "ArrowUp") {
         translationY += 0.1;
-      }
-      else if ( "ArrowDown" === event.key )
-      {
+      } else if (event.key === "ArrowDown") {
         translationY -= 0.1;
-      }
-      else if ( "ArrowRight" === event.key )
-      {
+      } else if (event.key === "ArrowRight") {
         translationX += 0.1;
-      }
-      else if ( "ArrowLeft" === event.key )
-      {
+      } else if (event.key === "ArrowLeft") {
         translationX -= 0.1;
-      }
-      else if ( "End" === event.key )
-      {
+      } else if (event.key === "End") {
         translationZ += 0.1;
-      }
-      else if ( "Home" === event.key )
-      {
+      } else if (event.key === "Home") {
         translationZ -= 0.1;
       }
-      //console.log( event );
+      // console.log( event );
     }
 
-    function keyUp( event )
-    {
-      //console.log( event );
+    function keyUp(event) {
+      // console.log( event );
     }
+
     /*
-    ******************************************
-    **********KEYBOARD DETECTION END**********
-    ******************************************
-    */
+     ******************************************
+     **********KEYBOARD DETECTION END**********
+     ******************************************
+     */
 
-    var vertices = [
+    let vertices = [
       // X, Y, Z         U, V
       // Top
       -1.0, 1.0, -1.0,   0, 0,
@@ -119,7 +105,7 @@
       1.0, -1.0, -1.0,    0, 1,
     ];
 
-    var indices = [
+    let indices = [
       // Top
       0, 1, 2,
       0, 2, 3,
@@ -145,87 +131,78 @@
       22, 20, 23
     ];
 
+    let vertex_buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
-
-    var vertex_buffer = gl.createBuffer( );
-    gl.bindBuffer( gl.ARRAY_BUFFER, vertex_buffer );
-    gl.bufferData( gl.ARRAY_BUFFER, new Float32Array( vertices ), gl.STATIC_DRAW );
-
-    var index_buffer = gl.createBuffer();
-    gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, index_buffer );
-    gl.bufferData( gl.ELEMENT_ARRAY_BUFFER, new Uint16Array( indices ), gl.STATIC_DRAW );
+    let index_buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
 
     // Unbind the buffer
-    gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, null );
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
+    let vertCode = [
+      "precision mediump float;",
+      "attribute vec3 position;",
+      "uniform mat4 Pmatrix;",
+      "uniform mat4 Vmatrix;",
+      "uniform mat4 Mmatrix;",
+      "attribute vec2 textureCoord;",
+      "attribute vec3 vertexNormal;",
+      "varying vec2 vTextureCoord;",
+      "varying vec3 fragNormal;",
+      "void main()",
+      "{",
+      "vTextureCoord = textureCoord;",
+      "fragNormal = (Mmatrix * vec4(vertexNormal, 0.0)).xyz;",
+      "gl_Position = Pmatrix * Vmatrix * Mmatrix * vec4(position, 1.0);",
+      "}"
+    ].join("\n");
 
+    let vertShader = gl.createShader(gl.VERTEX_SHADER);
 
-    var vertCode =
-      [
-        'precision mediump float;',
-        'attribute vec3 position;',
-        'uniform mat4 Pmatrix;',
-        'uniform mat4 Vmatrix;',
-        'uniform mat4 Mmatrix;',
-        'attribute vec2 textureCoord;',
-        'attribute vec3 vertexNormal;',
-        'varying vec2 vTextureCoord;',
-        'varying vec3 fragNormal;',
-        'void main()',
-        '{',
-        'vTextureCoord = textureCoord;',
-        'fragNormal = (Mmatrix * vec4(vertexNormal, 0.0)).xyz;',
-        'gl_Position = Pmatrix * Vmatrix * Mmatrix * vec4(position, 1.0);',
-        '}'
-      ].join( '\n' );
+    gl.shaderSource(vertShader, vertCode);
 
-    var vertShader = gl.createShader( gl.VERTEX_SHADER );
+    gl.compileShader(vertShader);
 
-    gl.shaderSource( vertShader, vertCode );
+    let fragCode = [
+      "precision mediump float;",
+      "varying vec2 vTextureCoord;",
+      "uniform sampler2D sampler;",
+      "varying vec3 fragNormal;",
+      "uniform vec3 ambientLightIntensity;",
+      "void main()",
+      "{",
+      "vec3 surfaceNormal = normalize(fragNormal);",
+      "vec4 texel = texture2D(sampler, vTextureCoord);",
+      "gl_FragColor = vec4(texel.rgb * ambientLightIntensity, texel.a);",
+      "}"
+    ].join("\n");
 
-    gl.compileShader( vertShader );
+    let fragShader = gl.createShader(gl.FRAGMENT_SHADER);
 
-    var fragCode =
-      [
-        'precision mediump float;',
-        'varying vec2 vTextureCoord;',
-        'uniform sampler2D sampler;',
-        'varying vec3 fragNormal;',
-        'uniform vec3 ambientLightIntensity;',
-        'void main()',
-        '{',
-        'vec3 surfaceNormal = normalize(fragNormal);',
-        'vec4 texel = texture2D(sampler, vTextureCoord);',
-        'gl_FragColor = vec4(texel.rgb * ambientLightIntensity, texel.a);',
-        '}'
-      ].join( '\n' );
+    gl.shaderSource(fragShader, fragCode);
 
-    var fragShader = gl.createShader( gl.FRAGMENT_SHADER );
+    gl.compileShader(fragShader);
 
-    gl.shaderSource( fragShader, fragCode );
+    let shaderProgram = gl.createProgram();
 
-    gl.compileShader( fragShader );
+    gl.attachShader(shaderProgram, vertShader);
 
+    gl.attachShader(shaderProgram, fragShader);
 
-    var shaderProgram = gl.createProgram( );
+    gl.linkProgram(shaderProgram);
 
-    gl.attachShader( shaderProgram, vertShader );
+    gl.useProgram(shaderProgram);
 
-    gl.attachShader( shaderProgram, fragShader );
+    /* ====== Associating attributes to vertex shader ===== */
+    let Pmatrix = gl.getUniformLocation(shaderProgram, "Pmatrix");
+    let Vmatrix = gl.getUniformLocation(shaderProgram, "Vmatrix");
+    let Mmatrix = gl.getUniformLocation(shaderProgram, "Mmatrix");
 
-    gl.linkProgram( shaderProgram );
-
-    gl.useProgram( shaderProgram );
-
-
-
-    /* ====== Associating attributes to vertex shader =====*/
-    var Pmatrix = gl.getUniformLocation( shaderProgram, "Pmatrix" );
-    var Vmatrix = gl.getUniformLocation( shaderProgram, "Vmatrix" );
-    var Mmatrix = gl.getUniformLocation( shaderProgram, "Mmatrix" );
-
-    gl.bindBuffer( gl.ARRAY_BUFFER, vertex_buffer );
-    var position = gl.getAttribLocation( shaderProgram, 'position' );
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+    let position = gl.getAttribLocation(shaderProgram, "position");
     gl.vertexAttribPointer(
       position, // Attribute location
       3, // Number of elements per attribute
@@ -236,9 +213,9 @@
     );
 
     // Position Buffer Binding
-    gl.enableVertexAttribArray( position );
+    gl.enableVertexAttribArray(position);
 
-    var texture = gl.getAttribLocation( shaderProgram, 'textureCoord' );
+    let texture = gl.getAttribLocation(shaderProgram, "textureCoord");
     gl.vertexAttribPointer(
       texture, // Attribute location
       2, // Number of elements per attribute
@@ -248,44 +225,33 @@
       3 * Float32Array.BYTES_PER_ELEMENT // Offset from the beginning of a single vertex to this attribute
     );
 
-    gl.enableVertexAttribArray( texture );
+    gl.enableVertexAttribArray(texture);
 
-    gl.bindBuffer( gl.ARRAY_BUFFER, vertex_buffer );
-    var normalAttribLocation = gl.getAttribLocation( shaderProgram, 'vertexNormal' );
-    gl.vertexAttribPointer(
-      normalAttribLocation,
-      3, gl.FLOAT,
-      gl.TRUE,
-      3 * Float32Array.BYTES_PER_ELEMENT,
-      0
-    );
-    gl.enableVertexAttribArray( normalAttribLocation );
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+    let normalAttribLocation = gl.getAttribLocation(shaderProgram, "vertexNormal");
+    gl.vertexAttribPointer(normalAttribLocation, 3, gl.FLOAT, gl.TRUE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
+    gl.enableVertexAttribArray(normalAttribLocation);
 
     // Create texture
-    var boxTexture = gl.createTexture( );
-    gl.bindTexture( gl.TEXTURE_2D, boxTexture );
-    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE );
-    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE );
-    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR );
-    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR );
-    gl.texImage2D(
-      gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,
-      gl.UNSIGNED_BYTE,
-      document.getElementById( 'CrateImage' )
-    );
-    gl.bindTexture( gl.TEXTURE_2D, null );
+    let boxTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, boxTexture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, document.getElementById("CrateImage"));
+    gl.bindTexture(gl.TEXTURE_2D, null);
 
-    gl.useProgram( shaderProgram );
+    gl.useProgram(shaderProgram);
 
-    var ambientUniformLocation = gl.getUniformLocation( shaderProgram, 'ambientLightIntensity' );
+    let ambientUniformLocation = gl.getUniformLocation(shaderProgram, "ambientLightIntensity");
 
-    gl.uniform3f( ambientUniformLocation, 1.0, 0.1, 0.1 );
+    gl.uniform3f(ambientUniformLocation, 1.0, 0.1, 0.1);
 
     /*==================== MATRIX =====================*/
 
-    function get_projection( angle, a, zMin, zMax )
-    {
-      var ang = Math.tan( ( angle * 0.5 ) * Math.PI / 180 );
+    function get_projection(angle, a, zMin, zMax) {
+      let ang = Math.tan((angle * 0.5 * Math.PI) / 180);
 
       return [
         0.5 / ang, 0 , 0, 0,
@@ -295,22 +261,23 @@
       ];
     }
 
-    var proj_matrix = get_projection( 40, canvas.width / canvas.height, 1, 100) ;
+    let proj_matrix = get_projection(40, canvas.width / canvas.height, 1, 100);
 
-    var mov_matrix = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
-    var mov_matrix2 = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
-    var view_matrix = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+    let mov_matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+    let mov_matrix2 = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+    let view_matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 
     // Translating z
-    view_matrix[14] = view_matrix[14] - 6;
+    view_matrix[14] -= 6;
 
     /*==================== Rotation ====================*/
 
-    function rotateX( m, angle )
-    {
-      var c = Math.cos( angle );
-      var s = Math.sin( angle );
-      var mv1 = m[1], mv5 = m[5], mv9 = m[9];
+    function rotateX(m, angle) {
+      let c = Math.cos(angle);
+      let s = Math.sin(angle);
+      let mv1 = m[1],
+        mv5 = m[5],
+        mv9 = m[9];
 
       m[1] = m[1] * c - m[2] * s;
       m[5] = m[5] * c - m[6] * s;
@@ -321,11 +288,12 @@
       m[10] = m[10] * c + mv9 * s;
     }
 
-    function rotateY( m, angle )
-    {
-      var c = Math.cos( angle );
-      var s = Math.sin( angle );
-      var mv0 = m[0], mv4 = m[4], mv8 = m[8];
+    function rotateY(m, angle) {
+      let c = Math.cos(angle);
+      let s = Math.sin(angle);
+      let mv0 = m[0],
+        mv4 = m[4],
+        mv8 = m[8];
 
       m[0] = c * m[0] + s * m[2];
       m[4] = c * m[4] + s * m[6];
@@ -336,33 +304,33 @@
       m[10] = c * m[10] - s * mv8;
     }
 
-    function rotateZ( m, angle )
-    {
-      var c = Math.cos( angle );
-      var s = Math.sin( angle );
-      var mv0 = m[0], mv4 = m[4], mv8 = m[8];
+    function rotateZ(m, angle) {
+      let c = Math.cos(angle);
+      let s = Math.sin(angle);
+      let mv0 = m[0],
+        mv4 = m[4],
+        mv8 = m[8];
 
       m[0] = c * m[0] - s * m[1];
       m[4] = c * m[4] - s * m[5];
       m[8] = c * m[8] - s * m[9];
 
-      m[1]=c * m[1] + s * mv0;
-      m[5]=c * m[5] + s * mv4;
-      m[9]=c * m[9] + s * mv8;
+      m[1] = c * m[1] + s * mv0;
+      m[5] = c * m[5] + s * mv4;
+      m[9] = c * m[9] + s * mv8;
     }
 
-    var previous_time = 0;
-    var animate = function( time )
-    {
-      var dt = time - previous_time;
+    let previous_time = 0;
+    var animate = function(time) {
+      let dt = time - previous_time;
 
-      rotateZ( mov_matrix, dt * 0.001 );//time
-      rotateY( mov_matrix, dt * 0.0004 );
-      rotateX( mov_matrix, dt * 0.0006 );
+      rotateZ(mov_matrix, dt * 0.001); // time
+      rotateY(mov_matrix, dt * 0.0004);
+      rotateX(mov_matrix, dt * 0.0006);
 
-      rotateZ( mov_matrix2, dt * 0.000 );//time
-      rotateY( mov_matrix2, dt * 0.001 );
-      rotateX( mov_matrix2, dt * 0.000 );
+      rotateZ(mov_matrix2, dt * 0.0); // time
+      rotateY(mov_matrix2, dt * 0.001);
+      rotateX(mov_matrix2, dt * 0.0);
 
       mov_matrix[12] = 1;
       mov_matrix[13] = 0;
@@ -374,35 +342,35 @@
 
       previous_time = time;
 
-      gl.enable( gl.DEPTH_TEST );
-      gl.depthFunc( gl.LEQUAL );
-      gl.clearColor( 0.5, 0.5, 0.5, 0.9 );
-      gl.clearDepth( 1.0 );
+      gl.enable(gl.DEPTH_TEST);
+      gl.depthFunc(gl.LEQUAL);
+      gl.clearColor(0.5, 0.5, 0.5, 0.9);
+      gl.clearDepth(1.0);
 
-      gl.viewport( 0.0, 0.0, canvas.width, canvas.height );
-      gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
-      gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, index_buffer );
+      gl.viewport(0.0, 0.0, canvas.width, canvas.height);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
 
-      gl.bindTexture( gl.TEXTURE_2D, boxTexture );
-      gl.activeTexture( gl.TEXTURE0 );
+      gl.bindTexture(gl.TEXTURE_2D, boxTexture);
+      gl.activeTexture(gl.TEXTURE0);
 
-      //var tX = 2.0, tY = 0.0, tZ = 10.0;
-      gl.uniformMatrix4fv( Pmatrix, false, proj_matrix );
-      gl.uniformMatrix4fv( Vmatrix, false, view_matrix );
-      gl.uniformMatrix4fv( Mmatrix, false, mov_matrix );
+      // var tX = 2.0, tY = 0.0, tZ = 10.0;
+      gl.uniformMatrix4fv(Pmatrix, false, proj_matrix);
+      gl.uniformMatrix4fv(Vmatrix, false, view_matrix);
+      gl.uniformMatrix4fv(Mmatrix, false, mov_matrix);
 
-      gl.drawElements( gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0 );
+      gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
 
-      gl.uniformMatrix4fv( Pmatrix, false, proj_matrix );
-      gl.uniformMatrix4fv( Vmatrix, false, view_matrix );
-      gl.uniformMatrix4fv( Mmatrix, false, mov_matrix2 );
+      gl.uniformMatrix4fv(Pmatrix, false, proj_matrix);
+      gl.uniformMatrix4fv(Vmatrix, false, view_matrix);
+      gl.uniformMatrix4fv(Mmatrix, false, mov_matrix2);
 
-      gl.drawElements( gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0 );
+      gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
 
-      window.requestAnimationFrame( animate );
-    }
+      window.requestAnimationFrame(animate);
+    };
 
-    animate( 0 );
+    animate(0);
   }
 </script>
 
