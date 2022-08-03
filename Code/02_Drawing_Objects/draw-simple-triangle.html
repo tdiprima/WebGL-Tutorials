@@ -13,8 +13,7 @@
   function main() {
     let canvas = document.querySelector("#glcanvas");
     let gl = canvas.getContext("webgl");
-    if (!gl)
-    {
+    if (!gl) {
       alert( "Unable to setup WebGL. Your browser or computer may not support it." );
       return;
     }
