@@ -4,29 +4,34 @@
   <meta charset="utf-8">
   <title>Setup WebGL Project</title>
   <link rel="stylesheet" href="/css/index.css">
+  <!-- Inspiration: https://github.com/tiansijie/WebGLHelloWorld/blob/master/index.html -->
 </head>
 <body>
 
 <canvas id="glcanvas" width="640" height="480"></canvas>
 
 <script>
-  function main() {
-    let canvas = document.querySelector("#glcanvas");
-
-    let gl = canvas.getContext("webgl");
-    console.log("%cwebgl", "color: #ccff00;", gl);
-
-    if (!gl) {
-      alert("Unable to setup WebGL. Your browser or computer may not support it.");
-      return;
+  let gl;
+  function initGL(canvas) {
+    try {
+      gl = canvas.getContext("webgl");
+      gl.viewportWidth = canvas.width;
+      gl.viewportHeight = canvas.height;
+      console.log("%cwebgl", "color: #ccff00;", gl);
+    } catch (e) {
+      console.error(e.message);
     }
-
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
-
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    if (!gl) {
+      alert("WebGL is not available on your browser!");
+    }
   }
 
-  main();
+  (function loadWebGL(){
+    let canvas = document.getElementById("glcanvas");
+    initGL(canvas);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+  })();
 </script>
 
 </body>
