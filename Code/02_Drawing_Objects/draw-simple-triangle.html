@@ -9,12 +9,15 @@
 
 <canvas id="glcanvas" width="640" height="480"></canvas>
 
-<script src="/js/setup_webgl.js"></script>
-
 <script>
   function main() {
     let canvas = document.querySelector("#glcanvas");
     let gl = canvas.getContext("webgl");
+    if (!gl)
+    {
+      alert( "Unable to setup WebGL. Your browser or computer may not support it." );
+      return;
+    }
 
     let vertices = [
       0.0, 0.5, 0.0,
