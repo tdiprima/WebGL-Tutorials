@@ -145,17 +145,22 @@
     let vertCode = [
       "precision mediump float;",
       "attribute vec3 position;",
+
       "uniform mat4 Pmatrix;",
       "uniform mat4 Vmatrix;",
       "uniform mat4 Mmatrix;",
+
       "attribute vec2 textureCoord;",
       "attribute vec3 vertexNormal;",
+
       "varying vec2 vTextureCoord;",
       "varying vec3 fragNormal;",
+
       "void main()",
       "{",
       "vTextureCoord = textureCoord;",
       "fragNormal = (Mmatrix * vec4(vertexNormal, 0.0)).xyz;",
+
       "gl_Position = Pmatrix * Vmatrix * Mmatrix * vec4(position, 1.0);",
       "}"
     ].join("\n");
@@ -168,14 +173,17 @@
 
     let fragCode = [
       "precision mediump float;",
+
       "varying vec2 vTextureCoord;",
       "uniform sampler2D sampler;",
       "varying vec3 fragNormal;",
       "uniform vec3 ambientLightIntensity;",
+
       "void main()",
       "{",
       "vec3 surfaceNormal = normalize(fragNormal);",
       "vec4 texel = texture2D(sampler, vTextureCoord);",
+
       "gl_FragColor = vec4(texel.rgb * ambientLightIntensity, texel.a);",
       "}"
     ].join("\n");
@@ -229,7 +237,14 @@
 
     gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
     let normalAttribLocation = gl.getAttribLocation(shaderProgram, "vertexNormal");
-    gl.vertexAttribPointer(normalAttribLocation, 3, gl.FLOAT, gl.TRUE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
+    gl.vertexAttribPointer(
+      normalAttribLocation,
+      3,
+      gl.FLOAT,
+      gl.TRUE,
+      3 * Float32Array.BYTES_PER_ELEMENT,
+      0
+    );
     gl.enableVertexAttribArray(normalAttribLocation);
 
     // Create texture
@@ -263,9 +278,9 @@
 
     let proj_matrix = get_projection(40, canvas.width / canvas.height, 1, 100);
 
-    let mov_matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-    let mov_matrix2 = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-    let view_matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+    let mov_matrix = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+    let mov_matrix2 = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+    let view_matrix = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
 
     // Translating z
     view_matrix[14] -= 6;
@@ -275,9 +290,9 @@
     function rotateX(m, angle) {
       let c = Math.cos(angle);
       let s = Math.sin(angle);
-      let mv1 = m[1],
-        mv5 = m[5],
-        mv9 = m[9];
+      let mv1 = m[1];
+      let mv5 = m[5];
+      let mv9 = m[9];
 
       m[1] = m[1] * c - m[2] * s;
       m[5] = m[5] * c - m[6] * s;
@@ -291,9 +306,9 @@
     function rotateY(m, angle) {
       let c = Math.cos(angle);
       let s = Math.sin(angle);
-      let mv0 = m[0],
-        mv4 = m[4],
-        mv8 = m[8];
+      let mv0 = m[0];
+      let mv4 = m[4];
+      let mv8 = m[8];
 
       m[0] = c * m[0] + s * m[2];
       m[4] = c * m[4] + s * m[6];
@@ -307,9 +322,9 @@
     function rotateZ(m, angle) {
       let c = Math.cos(angle);
       let s = Math.sin(angle);
-      let mv0 = m[0],
-        mv4 = m[4],
-        mv8 = m[8];
+      let mv0 = m[0];
+      let mv4 = m[4];
+      let mv8 = m[8];
 
       m[0] = c * m[0] - s * m[1];
       m[4] = c * m[4] - s * m[5];
@@ -321,7 +336,7 @@
     }
 
     let previous_time = 0;
-    var animate = function(time) {
+    const animate = function(time) {
       let dt = time - previous_time;
 
       rotateZ(mov_matrix, dt * 0.001); // time
@@ -354,7 +369,7 @@
       gl.bindTexture(gl.TEXTURE_2D, boxTexture);
       gl.activeTexture(gl.TEXTURE0);
 
-      // var tX = 2.0, tY = 0.0, tZ = 10.0;
+      // let tX = 2.0, tY = 0.0, tZ = 10.0;
       gl.uniformMatrix4fv(Pmatrix, false, proj_matrix);
       gl.uniformMatrix4fv(Vmatrix, false, view_matrix);
       gl.uniformMatrix4fv(Mmatrix, false, mov_matrix);
