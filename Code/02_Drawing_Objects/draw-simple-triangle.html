@@ -13,7 +13,6 @@
 
 <script>
   function main() {
-
     let canvas = document.querySelector("#glcanvas");
     let gl = canvas.getContext("webgl");
 
@@ -45,8 +44,12 @@
     // Unbind the buffer
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
-    let vertCode =
-      'attribute vec3 coordinates;' + 'void main(void)' + '{' + ' gl_Position = vec4(coordinates, 1.0);' + '}';
+    let vertCode = 
+      'attribute vec3 coordinates;' +
+      'void main(void)' +
+      '{' +
+        ' gl_Position = vec4(coordinates, 1.0);' +
+      '}';
 
     let vertShader = gl.createShader(gl.VERTEX_SHADER);
 
@@ -54,7 +57,11 @@
 
     gl.compileShader(vertShader);
 
-    let fragCode = 'void main(void)' + '{' + ' gl_FragColor = vec4(0.0, 0.0, 0.0, 0.1);' + '}';
+    let fragCode = 
+      'void main(void)' +
+      '{' +
+        ' gl_FragColor = vec4(0.0, 0.0, 0.0, 0.1);' +
+      '}';
 
     let fragShader = gl.createShader(gl.FRAGMENT_SHADER);
 
